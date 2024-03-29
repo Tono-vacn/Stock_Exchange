@@ -1,5 +1,5 @@
-#ifndef BASIC_HEADER_H
-#define BASIC_HEADER_H
+#ifndef BASIC_HEADER_HPP
+#define BASIC_HEADER_HPP
 
 #include "threadpool/threadpool.h"
 
