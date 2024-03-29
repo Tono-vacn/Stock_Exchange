@@ -5,21 +5,21 @@ Base = sqlalchemy.orm.declarative_base
 
 class Account(Base):
   __tablename__ = 'account'
-  id = sqlalchemy.Column(sqlalchemy.Integer, primary_key = True)
+  id = sqlalchemy.Column(sqlalchemy.String, primary_key = True)
   balance = sqlalchemy.Column(sqlalchemy.Float)
 
 class Position(Base):
   __tablename__ = 'position'
-  user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('account.id'), primary_key=True)
-  symbol = sqlalchemy.Column(sqlalchemy.TEXT, primary_key=True)
+  account_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('account.id'), primary_key=True)
+  symbol = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
   amount = sqlalchemy.Column(sqlalchemy.Integer)
 
 
 class Transaction(Base):
   __tablename__ = 'transaction'
   transaction_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-  user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('account.id'))
-  symbol = sqlalchemy.Column(sqlalchemy.TEXT)
+  account_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('account.id'))
+  symbol = sqlalchemy.Column(sqlalchemy.String)
   amount = sqlalchemy.Column(sqlalchemy.Integer)
   limit = sqlalchemy.Column(sqlalchemy.Float)
 
