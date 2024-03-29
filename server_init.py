@@ -3,7 +3,7 @@ from multiprocessing import Pool
 
 ###need change later####
 from db_model import engine
-from parser import parse_xml_req
+from parser_xml import parse_xml_req
 
 import collections
 from parser import lk
