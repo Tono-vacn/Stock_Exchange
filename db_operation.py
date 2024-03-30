@@ -24,8 +24,9 @@ def check_account(account_id: str):
   exist_account = session.query(Account).filter(Account.id == account_id).all()
   if exist_account is None:
     session.close()
-    raise ValueError("No account exists")
+    return True
   session.close()
+  return False
 
 def add_position(account_id: str ,symbol: str, number: int):
   session = sqlalchemy.orm.Session()
