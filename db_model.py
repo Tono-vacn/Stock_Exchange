@@ -28,7 +28,7 @@ class Status(Base):
   __tablename__ = 'status'
   status_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
   transaction_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('transaction.transaction_id'))
-  name = sqlalchemy.Column(sqlalchemy.String)
+  status_name = sqlalchemy.Column(sqlalchemy.String)
   shares = sqlalchemy.Column(sqlalchemy.Integer)
   price = sqlalchemy.Column(sqlalchemy.Float, nullable=True)
   time = sqlalchemy.Column(sqlalchemy.TIMESTAMP, nullable=True)
