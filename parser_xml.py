@@ -32,7 +32,7 @@ def generate_transaction(root, child, response):
     global lock
     with lock:
       tran_id = add_transaction(int(root.attrib['id']), child.attrib['sym'], int(child.attrib['amount']), float(child.attrib['limit']))
-      execute_order(tran_id)
+      process_order(tran_id)
     response.append(generate_new_node("opened", None, {'sym': child.attrib['sym'], 'amount':
                   str(int(child.attrib['amount'])), 'limit': child.attrib['limit'], 'id': tran_id}))
     pass
@@ -87,6 +87,7 @@ def process_transaction(root, response):
           generate_cancel_transaction(root, child, response)
     # except Exception as e:
     else:
+      # Invalide_node = ET.Element("error")
       for child in root:
         response.append(generate_new_node("error", "Invalid Transaction ID", {'id':root.attrib['id']}))
           
@@ -99,6 +100,7 @@ def parse_xml_req(req):
       process_create(root, response)
       pass
     elif root.tag == "transaction":
+      process_transaction(root, response)
       pass
     else:
       response.text = "Invalid request"
