@@ -1,6 +1,9 @@
 import sqlalchemy
 import sqlalchemy.orm
 
+engine = sqlalchemy.create_engine('postgresql+psycopg2://postgres:passw0rd@127.0.0.1:12345/stock_db')
+Session = sqlalchemy.orm.sessionmaker(bind=engine)
+
 Base = sqlalchemy.orm.declarative_base
 
 class Account(Base):
