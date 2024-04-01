@@ -6,17 +6,17 @@ from db_model import engine
 from parser_xml import parse_xml_req
 
 import collections
-from parser import lk
+from parser_xml import lk
 NUM_WORKERS = 3
 
 
-def initialize_worker():
+def initialize_worker(lck):
     
     ###need change later####
     engine.dispose(close = False)
     
     global lock
-    lock = lk 
+    lock = lck 
     pass
 
 def rcv_xml_length(ck):

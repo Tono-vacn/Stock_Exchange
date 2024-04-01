@@ -1,13 +1,18 @@
 from db_model import *
 from datetime import *
 
+def drop_all_and_init():
+  Base.metadata.drop_all(engine)
+  Base.metadata.create_all(engine)
+
 def add_account(id: str, balance: float):
-  session = sqlalchemy.orm.Session()
+  session = Session()
   if balance < 0:
     session.close()
     raise ValueError("Balance is negative")
+  # if 'account' in metadata.tables:
   exist_account = session.query(Account).filter(Account.id == id).all()
-  if exist_account is not None:
+  if exist_account != []:
     session.close()
     raise ValueError("Account id exists")
   try:
@@ -20,33 +25,46 @@ def add_account(id: str, balance: float):
   pass
 
 def check_account(account_id: str):
-  session = sqlalchemy.orm.Session()
+  session = Session()
+  # if 'account' in metadata.tables:
   exist_account = session.query(Account).filter(Account.id == account_id).all()
-  if exist_account is None:
+  if exist_account != []:
     session.close()
     return True
   session.close()
   return False
 
 def add_position(account_id: str ,symbol: str, number: int):
-  session = sqlalchemy.orm.Session()
-  check_account(account_id)
+  session = Session()
+  if not check_account(account_id):
+    session.close()
+    raise ValueError("No such account")
+
   if number < 0:
     session.close()
     raise ValueError("No short allowed")
+  
+  # if 'position' in metadata.tables:
   rows = session.query(Position).filter(Position.account_id == account_id, Position.symbol == symbol).with_for_update().all()
-  if rows is not None:
+  if rows != []:
     for row in rows:
       row.amount += number
   else:
     session.add(Position(account_id = account_id, symbol = symbol, amount = number))
-    session.commit()
+      
+  # else:
+  #   session.add(Position(account_id = account_id, symbol = symbol, amount = number))
+
+  session.commit()
   session.close()
   pass
 
 def add_transaction(account_id, symbol, amount, price):
-  session = sqlalchemy.orm.Session()
-  check_account(account_id)
+  session = Session()
+  if not check_account(account_id):
+    session.close()
+    raise ValueError("No such account")
+  
   if amount > 0:
     rows = session.query(Account).filter(Account.id == account_id).with_for_update().all()
     if rows[0].balance < amount * price:
@@ -56,57 +74,59 @@ def add_transaction(account_id, symbol, amount, price):
     session.commit()
   else:
     rows = session.query(Position).filter(Position.account_id == account_id, Position.symbol == symbol).with_for_update().all()
-    if rows is not None:
-      amount = abs(amount)
-      if rows[0].amount < amount:
+    if rows != []:
+      if rows[0].amount < abs(amount):
         session.close()
         raise ValueError("No sufficient shares")
-      rows[0].amount -= amount
+      rows[0].amount += amount
     else:
       session.close()
       raise ValueError("No such symbol exist")
   transaction = Transaction(account_id = account_id, symbol = symbol, amount = amount, limit = price)
-  transaction_id = transaction.transaction_id
   session.add(transaction)
   session.commit()
+  transaction_id = transaction.transaction_id
   session.close()
   add_status(transaction_id, "open", amount, price)
   return transaction_id
 
 def add_status(transaction_id: int, status_name: str, shares: int, price: float):
-  session = sqlalchemy.orm.Session()
-  rows = session.query(Status).filter(Status.transaction_id == transaction_id).all()
-  if rows is not None:
-    session.close()
-    raise ValueError("Current transaction already has a status")
+  session = Session()
+  # if 'status' in metadata.tables:
+  # rows = session.query(Status).filter(Status.transaction_id == transaction_id, 
+  #                                     Status.status_name=='open'
+  #                                     ).all()
+  # if rows != []:
+  #   session.close()
+  #   raise ValueError("Current transaction already has a status")
   time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
   session.add(Status(transaction_id = transaction_id, status_name = status_name, shares = shares, price = price, time = time))
   session.commit()
   session.close()
   pass
 
-def query_transaction(account_id, transaction_id):
-  session = sqlalchemy.orm.Session()
+def query_transaction(account_id, transaction_id, session):
+  # session = Session()
   query = session.query(Status).join(Transaction).join(Account)
   query = query.filter(Account.id == account_id)
   query = query.filter(Transaction.transaction_id == transaction_id)
   query = query.order_by(Status.status_id.asc())
   order = query.all()
-  result = list(order)
-  session.commit()
-  session.close()
-  return result
+  # result = list(order)
+  # session.commit()
+  # session.close()
+  return order
 
-def cancel_transaction(account_id, transaction_id):
-  session = sqlalchemy.orm.Session()
+def cancel_transaction(account_id, transaction_id,session):
+  # session = Session()
   query = session.query(Status).join(Transaction).join(Account)
   query = query.filter(Account.id == account_id)
   status = query.filter(Transaction.transaction_id == transaction_id)
-  if len(status) == 0:
+  if status.count() == 0:
     session.close()
     raise ValueError("No such transaction exist")
   status_rows = status.filter(Status.status_name == "open").with_for_update().all()
-  if status_rows is None:
+  if status_rows == []:
     session.close()
     raise ValueError("A non-open transaction can't be canceled")
   is_buy = status_rows[0].shares > 0
@@ -120,11 +140,11 @@ def cancel_transaction(account_id, transaction_id):
     account_rows[0].balance += status_rows[0].shares * status_rows[0].price
     session.commit()
   else:
-    shares = abs(status_rows[0].shares)
+    shares = status_rows[0].shares
     account_id = account_rows[0].id
     symbol = symbol_rows[0].symbol
     position_rows = session.query(Position).filter(Position.account_id == account_id, Position.symbol == symbol).with_for_update().all()
-    position_rows[0].amount += shares
-  session.close()
-  order = query_transaction(account_id, transaction_id)
+    position_rows[0].amount -= shares
+  # session.close()
+  order = query_transaction(account_id, transaction_id, session)
   return order

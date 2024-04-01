@@ -1,7 +1,15 @@
 import sqlalchemy
 import sqlalchemy.orm
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-Base = sqlalchemy.orm.declarative_base
+engine = create_engine(
+    'postgresql://postgres:abc123@localhost:5432/hw4_568')
+Session = sessionmaker(bind=engine)
+
+metadata = sqlalchemy.MetaData()
+
+Base = sqlalchemy.orm.declarative_base()
 
 class Account(Base):
   __tablename__ = 'account'
