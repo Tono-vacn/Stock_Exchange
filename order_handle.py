@@ -155,7 +155,7 @@ def check_existance(tran_id):
   # can be deleted
   if cur_or[0].status_name != 'open':
     raise ValueError("Non-open transaction")
-  
+  session.close()
   pass
 
 def process_order(tran_id):

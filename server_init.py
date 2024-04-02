@@ -2,7 +2,7 @@ import socket
 from multiprocessing import Pool
 
 ###need change later####
-from db_model import engine
+from db_operation import *
 from parser_xml import parse_xml_req
 
 import collections
@@ -11,7 +11,6 @@ NUM_WORKERS = 3
 
 
 def initialize_worker(lck):
-    
     ###need change later####
     engine.dispose(close = False)
     
@@ -42,6 +41,7 @@ def rcv_prcs_xml_from_ck(ck):
     # return recived_num
     recived_num = rcv_xml_length(ck)
     xml_data = ck.recv(recived_num).decode("utf-8")
+    print("Received data: ", xml_data)
     response = parse_xml_req(xml_data)
     ck.sendall(response.encode("utf-8"))
     ck.close()
@@ -59,6 +59,7 @@ def sk_connect():
     
 
 def server_init():
+    drop_all_and_init()
     pool = Pool(processes=NUM_WORKERS, initializer=initialize_worker, initargs=(lk,))
     # create a db here first
     ########################
@@ -66,10 +67,14 @@ def server_init():
     csk_lst = collections.deque()
     while True:
         csk, addr = sk.accept()
+        print("Connection from: ", addr)
         csk_lst.append(csk)
         if csk_lst:
           ccsk = csk_lst.popleft()
-          pool.apply_async(func=parse_xml_req, args=(ccsk,))
+          
+          pool.apply_async(func=rcv_prcs_xml_from_ck, args=(ccsk,))
+          
+          print("Connection closed")
           
 
 if __name__ == "__main__":

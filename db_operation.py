@@ -6,28 +6,34 @@ def drop_all_and_init():
   Base.metadata.create_all(engine)
 
 def add_account(id: str, balance: float):
-  session = Session()
+  session1 = Session()
   if balance < 0:
-    session.close()
+    session1.close()
     raise ValueError("Balance is negative")
   # if 'account' in metadata.tables:
-  exist_account = session.query(Account).filter(Account.id == id).all()
+  exist_account = session1.query(Account).filter(Account.id == id).all()
   if exist_account != []:
-    session.close()
+    session1.close()
     raise ValueError("Account id exists")
   try:
-    session.add(Account(id = id, balance = balance))
-    session.commit()
+    session1.add(Account(id = id, balance = balance))
+    session1.commit()
+    session1.close()
   except:
-    session.close()
+    session1.flush()
+    session1.close()
     raise ValueError("Accounts already exists")
-  session.close()
+  session1.close()
   pass
 
 def check_account(account_id: str):
+  print("Checking account")
   session = Session()
+  print("Session created")
   # if 'account' in metadata.tables:
   exist_account = session.query(Account).filter(Account.id == account_id).all()
+  
+  print("query done")
   if exist_account != []:
     session.close()
     return True
@@ -45,17 +51,20 @@ def add_position(account_id: str ,symbol: str, number: int):
     raise ValueError("No short allowed")
   
   # if 'position' in metadata.tables:
-  rows = session.query(Position).filter(Position.account_id == account_id, Position.symbol == symbol).with_for_update().all()
-  if rows != []:
-    for row in rows:
-      row.amount += number
-  else:
-    session.add(Position(account_id = account_id, symbol = symbol, amount = number))
-      
+  try:
+    rows = session.query(Position).filter(Position.account_id == account_id, Position.symbol == symbol).with_for_update().all()
+    if rows != []:
+      for row in rows:
+        row.amount += number
+    else:
+      session.add(Position(account_id = account_id, symbol = symbol, amount = number))
+    session.commit()
+    session.close()
+  except:
+    session.rollback()
+    session.close()
   # else:
   #   session.add(Position(account_id = account_id, symbol = symbol, amount = number))
-
-  session.commit()
   session.close()
   pass
 
@@ -145,6 +154,7 @@ def cancel_transaction(account_id, transaction_id,session):
     symbol = symbol_rows[0].symbol
     position_rows = session.query(Position).filter(Position.account_id == account_id, Position.symbol == symbol).with_for_update().all()
     position_rows[0].amount -= shares
+    session.commit()
   # session.close()
   order = query_transaction(account_id, transaction_id, session)
   return order

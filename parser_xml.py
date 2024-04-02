@@ -30,10 +30,13 @@ def generate_transaction(root, child, response):
     if int(child.attrib['limit']) <= 0:
       response.append(generate_new_node("error", "Invalid limit price", {'id':str(root.attrib['id'])}))
       return
+    print("getting lock")
     global lk
     with lk:
+      print("adding transaction")
       tran_id = add_transaction(root.attrib['id'], child.attrib['sym'], int(child.attrib['amount']), float(child.attrib['limit']))
       process_order(tran_id)
+    print("releasing lock")
     response.append(generate_new_node("opened", None, {'sym': child.attrib['sym'], 'amount':
                   str(int(child.attrib['amount'])), 'limit': str(child.attrib['limit']), 'id': str(tran_id)}))
     pass
@@ -81,10 +84,11 @@ def generate_cancel_transaction(root, child, response):
   pass
 
 def process_transaction(root, response):
-
+    print("entering process_transaction")
     if check_account(root.attrib['id']):
       for child in root:
         if child.tag == "order":
+          print("processing order")
           generate_transaction(root, child, response)
         elif child.tag == "query":
           generate_query_transaction(root, child, response)
@@ -105,6 +109,7 @@ def parse_xml_req(req):
       process_create(root, response)
       pass
     elif root.tag in ["transaction","transactions"]:
+      print("parsing transaction")
       process_transaction(root, response)
       pass
     else:
