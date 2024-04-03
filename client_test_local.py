@@ -132,6 +132,8 @@ def TestCreation(id):
             id, [("X", -100, 100)], [], []))
         # print(response)
         cancel_id = ParseTid(response)
+        
+        
         response = client_send(transactionRequest(
             id, [("TELSA", 50, 100)], [], []))
         # print(response)

@@ -41,7 +41,7 @@ def rcv_prcs_xml_from_ck(ck):
     # return recived_num
     recived_num = rcv_xml_length(ck)
     xml_data = ck.recv(recived_num).decode("utf-8")
-    print("Received data: ", xml_data)
+    # print("Received data: ", xml_data)
     response = parse_xml_req(xml_data)
     ck.sendall(response.encode("utf-8"))
     ck.close()

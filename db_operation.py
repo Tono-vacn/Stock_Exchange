@@ -20,20 +20,20 @@ def add_account(id: str, balance: float):
     session1.commit()
     session1.close()
   except:
-    session1.flush()
+    # session1.flush()
     session1.close()
     raise ValueError("Accounts already exists")
   session1.close()
   pass
 
 def check_account(account_id: str):
-  print("Checking account")
+  # print("Checking account")
   session = Session()
-  print("Session created")
+  # print("Session created")
   # if 'account' in metadata.tables:
   exist_account = session.query(Account).filter(Account.id == account_id).all()
   
-  print("query done")
+  # print("query done")
   if exist_account != []:
     session.close()
     return True
