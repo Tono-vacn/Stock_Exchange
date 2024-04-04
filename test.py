@@ -144,7 +144,7 @@ def testSocket():
     server_init()
 
 if __name__=='__main__':
-  # drop_all_and_init()
+  # drop_all()
   
   server_init()
   
@@ -175,6 +175,7 @@ if __name__=='__main__':
   
   ####test3####
   # testParseMatch()
+  # drop_all_and_init()
   # testCancel()
   
   

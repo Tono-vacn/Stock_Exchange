@@ -1,36 +1,35 @@
 from db_model import *
 from datetime import *
 
+def drop_all():
+  Base.metadata.drop_all(engine)
+
 def drop_all_and_init():
   Base.metadata.drop_all(engine)
   Base.metadata.create_all(engine)
 
 def add_account(id: str, balance: float):
-  session1 = Session()
+  session = Session()
   if balance < 0:
-    session1.close()
+    session.close()
     raise ValueError("Balance is negative")
   # if 'account' in metadata.tables:
-  exist_account = session1.query(Account).filter(Account.id == id).all()
+  exist_account = session.query(Account).filter(Account.id == id).all()
   if exist_account != []:
-    session1.close()
+    session.close()
     raise ValueError("Account id exists")
   try:
-    session1.add(Account(id = id, balance = balance))
-    session1.commit()
-    session1.close()
+    session.add(Account(id = id, balance = balance))
+    session.commit()
+    session.close()
   except:
-    # session1.flush()
-    session1.close()
+    session.close()
     raise ValueError("Accounts already exists")
-  session1.close()
+  session.close()
   pass
 
 def check_account(account_id: str):
-  # print("Checking account")
   session = Session()
-  # print("Session created")
-  # if 'account' in metadata.tables:
   exist_account = session.query(Account).filter(Account.id == account_id).all()
   
   # print("query done")
@@ -101,13 +100,6 @@ def add_transaction(account_id, symbol, amount, price):
 
 def add_status(transaction_id: int, status_name: str, shares: int, price: float):
   session = Session()
-  # if 'status' in metadata.tables:
-  # rows = session.query(Status).filter(Status.transaction_id == transaction_id, 
-  #                                     Status.status_name=='open'
-  #                                     ).all()
-  # if rows != []:
-  #   session.close()
-  #   raise ValueError("Current transaction already has a status")
   time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
   session.add(Status(transaction_id = transaction_id, status_name = status_name, shares = shares, price = price, time = time))
   session.commit()
