@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 ADD . /code/
 
 RUN chmod +x run.sh
-RUN ./run.sh
+# RUN ./run.sh
