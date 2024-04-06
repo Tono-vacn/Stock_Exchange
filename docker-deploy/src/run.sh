@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# sleep 10
+sleep 5
 
 python3 server_init.py &
 pid=$!
@@ -12,7 +12,7 @@ do
     python3 ./testing/scalability/client_test_local.py > ./testing/outcome$i.txt &
 done
 
-sleep 5
+sleep 10
 
 kill $pid
 echo "Background process terminated"
