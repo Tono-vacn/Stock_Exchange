@@ -23,6 +23,7 @@ def add_account(id: str, balance: float):
     session.commit()
     session.close()
   except:
+    session.rollback()
     session.close()
     raise ValueError("Accounts already exists")
   session.close()
@@ -62,6 +63,7 @@ def add_position(account_id: str ,symbol: str, number: int):
   except:
     session.rollback()
     session.close()
+    raise ValueError("Position already exists")
   # else:
   #   session.add(Position(account_id = account_id, symbol = symbol, amount = number))
   session.close()

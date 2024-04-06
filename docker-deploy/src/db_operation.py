@@ -62,6 +62,7 @@ def add_position(account_id: str ,symbol: str, number: int):
   except:
     session.rollback()
     session.close()
+    raise ValueError("Position already exists")
   # else:
   #   session.add(Position(account_id = account_id, symbol = symbol, amount = number))
   session.close()
