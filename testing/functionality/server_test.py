@@ -1,3 +1,12 @@
+import sys
+import os
+
+# # 将上层目录添加到sys.path
+sys.path.append("./")
+
+
+
+# from ....parser_xml import *
 from parser_xml import *
 from server_init import *
 from db_operation import *

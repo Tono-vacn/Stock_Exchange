@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  db:
+      image: postgres
+      container_name: postgres_db_container
+      environment:
+        - POSTGRES_DB=postgres
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+      expose:
+        - "5432"
+      volumes:
+        - data-volume:/var/lib/postgresql/data
+  exchangemachine:
+      build: ./src
+      command: /code/run.sh
+      user: root
+      volumes:
+        - ./src:/code
+      ports:
+        - "12345:12345"
+      depends_on:
+        - db
+volumes:
+    data-volume:
