@@ -9,9 +9,9 @@ sys.path.append("./")
 from commons_func import generate_new_node
 SERVER_ADDR = '0.0.0.0'
 USER_NUM = 10
-serial_concurrent_flag = True 
+serial_concurrent_flag = True
 # True for serialize, False for concurrent
-print_flag = True
+print_flag = False
 
 def createRequest(uid, balance, position:dict):
     uid = str(uid)
@@ -79,7 +79,7 @@ def complexTest(id):
     response1 = client_send(transactionRequest(id, [("AAPL", 50, 100)], [], []))
     response2 = client_send(transactionRequest(id, [("AAPL", 50, 100)], [], []))
     client_send(transactionRequest(id, [], [get_transc_id(response), get_transc_id(response1), get_transc_id(response2)], [get_transc_id(response)]))
-    
+
 def simpleTest(id):
     client_send(createRequest(id, 0, {"AAPL": 100, }))
     response = client_send(transactionRequest(id, [("AAPL", -100, 100)], [], []))

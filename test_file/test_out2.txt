@@ -1,5 +1,0 @@
-Request send b'161\n<create><account id="1" balance="10000" /><symbol sym="TELSA"><account id="1">0</account></symbol><symbol sym="X"><account id="1">100</account></symbol></create>'
-Received data: b'<result><error id="1">Account id exists</error><created sym="TELSA" id="1" /><created sym="X" id="1" /></result>'
-Request send b'79\n<transactions id="1"><order sym="X" amount="-100" limit="100" /></transactions>'
-Received data: b'<result><opened sym="X" amount="-100" limit="100" id="21" /></result>'
-Request send b'81\n<transactions id="1"><order sym="TELSA" amount="50" limit="100" /></transactions>'
