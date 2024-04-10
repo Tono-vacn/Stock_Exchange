@@ -7,7 +7,7 @@ from parser_xml import parse_xml_req
 
 import collections
 from parser_xml import lk
-NUM_WORKERS = 3
+NUM_WORKERS = 8
 
 
 def initialize_worker(lck):

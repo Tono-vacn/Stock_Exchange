@@ -9,7 +9,7 @@ sys.path.append("./")
 from commons_func import generate_new_node
 SERVER_ADDR = '0.0.0.0'
 USER_NUM = 10
-serial_concurrent_flag = True 
+serial_concurrent_flag = False 
 # True for serialize, False for concurrent
 print_flag = True
 

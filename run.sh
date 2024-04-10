@@ -7,7 +7,7 @@ sleep 5
 for i in {1..2}
 do
     # python3 client_test_local.py > outcome$i.txt
-    python3 ./testing/scalability/client_test_local.py > ./testing/outcome$i.txt
+    python3 ./testing/scalability/client_test_local.py > ./testing/outcome$i.txt &
     # python3 client.py
 done
 
